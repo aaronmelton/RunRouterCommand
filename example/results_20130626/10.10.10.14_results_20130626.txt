@@ -1,0 +1,7 @@
+show users
+    Line       User       Host(s)              Idle       Location
+*  6 vty 0     cisco      idle                 00:00:00 10.10.10.4
+
+  Interface    User               Mode         Idle     Peer Address
+
+cisco#

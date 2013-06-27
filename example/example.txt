@@ -1,0 +1,10 @@
+Run Router Command v1.07
+------------------------
+
+Please enter your user name [aaron]: cisco
+Please enter your password:
+
+10.10.10.14 succeeded.
+One action done (succeeded)
+
+C:\Temp\>
