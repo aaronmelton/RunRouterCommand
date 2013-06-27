@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# RunRouterConfig.py
+# RunRouterCommand.py
 # Copyright (C) 2012-2013  Aaron Melton <aaron(at)aaronmelton(dot)com>
 # 
 # This program is free software; you can redistribute it and/or
@@ -35,15 +35,15 @@ logger = Logger()	# Log stuff
 @autologin()	# Exscript login descriptor
 
 def runRouterCommand(job, host, socket):
-	socket.execute('terminal length 0')	# Disable user-prompt to page through config
+	socket.execute('terminal length 0')	# Disable user-prompt to page through terminal output
 										# Exscript doesn't always recognize Cisco IOS
 										# for socket.autoinit() to work correctly
 
-	configDirectory = ('results_'+date+'/')	# Define directory to hold config files
-	if not os.path.exists(configDirectory): os.mkdir(configDirectory) # Create config file directory if it doesn't exist
+	outputDirectory = ('results_'+date+'/')	# Define directory to hold terminal output files
+	if not os.path.exists(outputDirectory): os.mkdir(outputDirectory) # Create config file directory if it doesn't exist
 		
 	outputFileName = host.get_name()+'_results_'+date+'.txt'	# Define output filename based on hostname and date
-	outputFile = file(configDirectory+outputFileName,'w')		# Open output file (will overwrite contents)
+	outputFile = file(outputDirectory+outputFileName,'w')		# Open output file (will overwrite contents)
 
 	commandList = open('commands.lst', 'r')		# Open file containing router commands
 	line = commandList.readlines()				# Read input file line-by-line
@@ -91,4 +91,4 @@ except IOError:	# If 'routers.lst' does not exist, provide error and quit
 	print 'File routers.lst does not exist!'
 	print 'Please create a file named \'routers.lst\' and place it in the same directory'
 	print 'as the script. This file must contain a list, one per line, of hostnames or IP'
-	print 'addresses the application will then connect to download the running-config.'
+	print 'addresses the application will then connect to run commands against.'
