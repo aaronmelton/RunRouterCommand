@@ -1,5 +1,5 @@
-RunRouterCommand.py
-===================
+# RunRouterCommand.py #
+----------
 
 You may copy, distribute and modify the software as long as you track 
 changes/dates of in source files and keep all modifications under GPL. 
