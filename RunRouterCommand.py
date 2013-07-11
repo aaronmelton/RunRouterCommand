@@ -43,7 +43,7 @@ def runRouterCommand(job, host, socket):
 	if not os.path.exists(outputDirectory): os.mkdir(outputDirectory) # Create config file directory if it doesn't exist
 		
 	outputFileName = host.get_name()+'_results_'+date+'.txt'	# Define output filename based on hostname and date
-	outputFile = file(outputDirectory+outputFileName,'w')		# Open output file (will overwrite contents)
+	outputFile = file(outputDirectory+outputFileName, 'w')		# Open output file (will overwrite contents)
 
 	commandList = open('commands.lst', 'r')		# Open file containing router commands
 	line = commandList.readlines()				# Read input file line-by-line
@@ -60,12 +60,12 @@ def runRouterCommand(job, host, socket):
 # Determine OS in use and clear screen of previous output
 os.system('cls' if os.name=='nt' else 'clear')
 
-print 'Run Router Command v1.07'
+print 'Run Router Command v1.08'
 print '------------------------'
 print
 
-try:	# Check for existance of 'routers.lst'; If exists, continue with program
-	with open('routers.lst'): pass
+try:# Check for existance of 'routers.lst' & 'commands.lst'; If exists, continue with program
+	with open('routers.lst', 'r'), open('commands.lst', 'r'): pass
 	# Define 'date' variable for use in the output filename
 	date = datetime.datetime.now()		# Determine today's date
 	date = date.strftime('%Y%m%d')	# Format date as YYYYMMDD
@@ -87,8 +87,8 @@ try:	# Check for existance of 'routers.lst'; If exists, continue with program
 	logFile.write(summarize(logger))	# Write results of program to file
 	logFile.close()						# Close 'status.log' file
 	
-except IOError:	# If 'routers.lst' does not exist, provide error and quit
-	print 'File routers.lst does not exist!'
-	print 'Please create a file named \'routers.lst\' and place it in the same directory'
-	print 'as the script. This file must contain a list, one per line, of hostnames or IP'
-	print 'addresses the application will then connect to run commands against.'
+except IOError:	# If 'routers.lst' or 'commands.lst' do not exist, provide error and quit
+	print 'File \'routers.lst\' or \'commands.lst\' do not exist!'
+	print '\'routers.lst\' must contain a list, one per line, of hostnames or IP addresses.'
+	print '\'commands.lst\' must contain a list, one per line, of commands to send to the'
+	print 'router.  Both files must be in the same parent directory as the application.'
