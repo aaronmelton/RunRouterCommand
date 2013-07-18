@@ -1,3 +1,9 @@
+## RunRouterCommand.py 1.09 (2013-07-18) ##
+* Changed application to search for 'routers.txt' file instead of 'routers.lst'
+  because some users were complaining about '.lst' not being a registered file
+  extension in Windows. (Their user permissions did not allow them to associate
+  this extension with Notepad, etc.)
+  
 ## RunRouterCommand.py 1.08 (2013-07-10) ##
 * Updated error checking to include validating `commands.lst` file exists.
 

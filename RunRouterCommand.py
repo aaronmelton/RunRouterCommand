@@ -45,7 +45,7 @@ def runRouterCommand(job, host, socket):
 	outputFileName = host.get_name()+'_results_'+date+'.txt'	# Define output filename based on hostname and date
 	outputFile = file(outputDirectory+outputFileName, 'w')		# Open output file (will overwrite contents)
 
-	commandList = open('commands.lst', 'r')		# Open file containing router commands
+	commandList = open('commands.txt', 'r')		# Open file containing router commands
 	line = commandList.readlines()				# Read input file line-by-line
 	
 	for x in range(0, len(line)):			# Loop through contents of input file
@@ -64,14 +64,14 @@ print 'Run Router Command v1.08'
 print '------------------------'
 print
 
-try:# Check for existance of 'routers.lst' & 'commands.lst'; If exists, continue with program
-	with open('routers.lst', 'r'), open('commands.lst', 'r'): pass
+try:# Check for existance of 'routers.txt' & 'commands.txt'; If exists, continue with program
+	with open('routers.txt', 'r'), open('commands.txt', 'r'): pass
 	# Define 'date' variable for use in the output filename
 	date = datetime.datetime.now()		# Determine today's date
 	date = date.strftime('%Y%m%d')	# Format date as YYYYMMDD
 
 	# Read hosts from specified file & remove duplicate entries, set protocol to SSH2
-	hosts = get_hosts_from_file('routers.lst',default_protocol='ssh2',remove_duplicates=True)
+	hosts = get_hosts_from_file('routers.txt',default_protocol='ssh2',remove_duplicates=True)
 	userCreds = read_login()	# Prompt the user for his name and password
 
 	print # Required for pretty spacing. :)
@@ -87,8 +87,8 @@ try:# Check for existance of 'routers.lst' & 'commands.lst'; If exists, continue
 	logFile.write(summarize(logger))	# Write results of program to file
 	logFile.close()						# Close 'status.log' file
 	
-except IOError:	# If 'routers.lst' or 'commands.lst' do not exist, provide error and quit
-	print 'File \'routers.lst\' or \'commands.lst\' do not exist!'
-	print '\'routers.lst\' must contain a list, one per line, of hostnames or IP addresses.'
-	print '\'commands.lst\' must contain a list, one per line, of commands to send to the'
+except IOError:	# If 'routers.txt' or 'commands.txt' do not exist, provide error and quit
+	print 'File \'routers.txt\' or \'commands.txt\' do not exist!'
+	print '\'routers.txt\' must contain a list, one per line, of hostnames or IP addresses.'
+	print '\'commands.txt\' must contain a list, one per line, of commands to send to the'
 	print 'router.  Both files must be in the same parent directory as the application.'
