@@ -169,9 +169,3 @@ pip-log.txt
 
 # Microsoft Visio
 .vsd
-
-# Application specific
-results_*/
-routers.txt
-commands.txt
-status_*.log
