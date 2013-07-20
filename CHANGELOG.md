@@ -1,3 +1,8 @@
+## RunRouterCommand.py 1.10 (2013-07-20) ##
+* Making application a bit more extendable through the use of functions and
+  variables.
+* Improved file error handling.
+
 ## RunRouterCommand.py 1.09 (2013-07-18) ##
 * Changed application to search for 'routers.txt' file instead of 'routers.lst'
   because some users were complaining about '.lst' not being a registered file

@@ -45,7 +45,7 @@ def runRouterCommand(job, host, socket):
 	outputFileName = host.get_name()+'_results_'+date+'.txt'	# Define output filename based on hostname and date
 	outputFile = file(outputDirectory+outputFileName, 'w')		# Open output file (will overwrite contents)
 
-	commandList = open('commands.txt', 'r')		# Open file containing router commands
+	commandList = open(commandFile, 'r')		# Open file containing router commands
 	line = commandList.readlines()				# Read input file line-by-line
 	
 	for x in range(0, len(line)):			# Loop through contents of input file
@@ -57,38 +57,85 @@ def runRouterCommand(job, host, socket):
 	socket.send('exit\r')				# Send the "exit" command to log out of router gracefully
 	socket.close()						# Close SSH connection
 
+def fileExist(fileName):
+# Check current path for existing file
+	try:
+		with open(fileName, 'r') as openedFile:
+			# If file exists (can be opened), return true
+			return 1
+	except IOError:
+		# If file does not exists (can't ben opened), return false
+		return 0
+	
 # Determine OS in use and clear screen of previous output
 os.system('cls' if os.name=='nt' else 'clear')
 
-print 'Run Router Command v1.09'
+print 'Run Router Command v1.10'
 print '------------------------'
 print
 
-try:# Check for existance of 'routers.txt' & 'commands.txt'; If exists, continue with program
-	with open('routers.txt', 'r'), open('commands.txt', 'r'): pass
-	# Define 'date' variable for use in the output filename
-	date = datetime.datetime.now()		# Determine today's date
-	date = date.strftime('%Y%m%d')	# Format date as YYYYMMDD
+# Define file with router IP Addresses or Hostnames
+routerFile = 'routers.txt'
+commandFile = 'commands.txt'
 
-	# Read hosts from specified file & remove duplicate entries, set protocol to SSH2
-	hosts = get_hosts_from_file('routers.txt',default_protocol='ssh2',remove_duplicates=True)
-	userCreds = read_login()	# Prompt the user for his name and password
+# Check for existance of routerFile; If exists, continue with program
+if fileExist(routerFile):
+	# Check for existance of commandFile; If exists, continue with program
+	if fileExist(commandFile):
 
-	print # Required for pretty spacing. :)
+		# Define 'date' variable for use in the output filename
+		date = datetime.datetime.now()		# Determine today's date
+		date = date.strftime('%Y%m%d')	# Format date as YYYYMMDD
+		
+		# Read hosts from specified file & remove duplicate entries, set protocol to SSH2
+		hosts = get_hosts_from_file(routerFile,default_protocol='ssh2',remove_duplicates=True)
+		userCreds = read_login()	# Prompt the user for his name and password
+		
+		print # Required for pretty spacing. :)
+		
+		queue = Queue(verbose=1, max_threads=4)	# Minimal message from queue, 4 threads
+		queue.add_account(userCreds)			# Use supplied user credentials
+		queue.run(hosts, runRouterCommand)		# Create queue using provided hosts
+		queue.shutdown()						# End all running threads and close queue
+		
+		print status(logger)	# Print current % status of operation to screen
+		
+		logFile = open('status_'+date+'.log', 'w')	# Open 'status.log' file
+		logFile.write(summarize(logger))	# Write results of program to file
+		logFile.close()						# Close 'status.log' file
 
-	queue = Queue(verbose=1, max_threads=4)	# Minimal message from queue, 4 threads
-	queue.add_account(userCreds)			# Use supplied user credentials
-	queue.run(hosts, runRouterCommand)		# Create queue using provided hosts
-	queue.shutdown()						# End all running threads and close queue
-
-	print status(logger)	# Print current % status of operation to screen
-
-	logFile = open('status_'+date+'.log', 'w')	# Open 'status.log' file
-	logFile.write(summarize(logger))	# Write results of program to file
-	logFile.close()						# Close 'status.log' file
+	# If commandFile does not exist, create example and exit
+	else:
+		# Attempt to open CommandFile to create an example
+		try:
+			with open (commandFile, 'w') as exampleFile:
+				# Write example command to commandFile
+				exampleFile.write('show run\n')
+				# Print error message
+				print 'Required file '+commandFile+' not found; One has been created for you.'
+				print 'This file must contain a list, one per line, of commands to send to the'
+				print 'router.'
+		# If unable to write file for whatever reason, just print error message
+		except IOError:
+				# Print error message
+				print 'Required file '+commandFile+' not found.'
+				print 'This file must contain a list, one per line, of commands to send to the'
+				print 'router.'
 	
-except IOError:	# If 'routers.txt' or 'commands.txt' do not exist, provide error and quit
-	print 'File \'routers.txt\' or \'commands.txt\' do not exist!'
-	print '\'routers.txt\' must contain a list, one per line, of hostnames or IP addresses.'
-	print '\'commands.txt\' must contain a list, one per line, of commands to send to the'
-	print 'router.  Both files must be in the same parent directory as the application.'
+# If routerFile does not exist, create example and exit
+else:
+	# Attempt to open routerFile to create an example
+	try:
+		with open (routerFile, 'w') as exampleFile:
+			# Write example IP Addresses or Hostnames to routerFile
+			exampleFile.write('192.168.1.1\n192.168.1.2\nRouterA\nRouterB\nRouterC\netc...')
+			# Print error message
+			print 'Required file '+routerFile+' not found; One has been created for you.'
+			print 'This file must contain a list, one per line, of Hostnames or IP addresses the'
+			print 'application will then connect to.'
+	# If unable to write file for whatever reason, just print error message
+	except IOError:
+		# Print error message
+		print 'Required file '+routerFile+' not found.'
+		print 'This file must contain a list, one per line, of Hostnames or IP addresses the'
+		print 'application will then connect to.'
