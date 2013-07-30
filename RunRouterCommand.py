@@ -70,17 +70,17 @@ def fileExist(fileName):
 # Determine OS in use and clear screen of previous output
 os.system('cls' if os.name=='nt' else 'clear')
 
-print "Run Router Command v1.10"
-print "------------------------"
+print "Run Router Command v1.1.10"
+print "--------------------------"
 print
 
 # Define file with router IP Addresses or Hostnames
 routerFile = 'routers.txt'
 commandFile = 'commands.txt'
 
-# Check for existance of routerFile; If exists, continue with program
+# Check for existence of routerFile; If exists, continue with program
 if fileExist(routerFile):
-	# Check for existance of commandFile; If exists, continue with program
+	# Check for existence of commandFile; If exists, continue with program
 	if fileExist(commandFile):
 
 		# Define 'date' variable for use in the output filename
