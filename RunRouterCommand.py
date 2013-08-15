@@ -22,6 +22,7 @@ import datetime	# Required for date format
 import Exscript	# Required for SSH, queue & logging functionality
 import os		# Required to determine OS of host
 
+from datetime					import datetime
 from Exscript                   import Queue, Host, Logger
 from Exscript.protocols 		import SSH2
 from Exscript.util.file			import get_hosts_from_file
@@ -29,6 +30,7 @@ from Exscript.util.log          import log_to
 from Exscript.util.decorator    import autologin
 from Exscript.util.interact     import read_login
 from Exscript.util.report		import status,summarize
+from os							import mkdir, name, path, system
 
 
 def fileExist(fileName):
@@ -36,7 +38,7 @@ def fileExist(fileName):
 	try:
 		with open(fileName, 'r') as openedFile:
 			# If file exists (can be opened), return true
-			return 1
+			return True
 	except IOError:
 		# If file does not exists (can't be opened), return false
 		return 0
@@ -50,7 +52,7 @@ def runRouterCommand(job, host, socket):
 										# for socket.autoinit() to work correctly
 
 	outputDirectory = ('results_'+date+'/')	# Define directory to hold terminal output files
-	if not os.path.exists(outputDirectory): os.mkdir(outputDirectory) # Create config file directory if it doesn't exist
+	if not path.exists(outputDirectory): mkdir(outputDirectory) # Create config file directory if it doesn't exist
 		
 	outputFileName = host.get_name()+'_results_'+date+'.txt'	# Define output filename based on hostname and date
 	outputFile = file(outputDirectory+outputFileName, 'w')		# Open output file (will overwrite contents)
@@ -69,7 +71,7 @@ def runRouterCommand(job, host, socket):
 
 	
 # Determine OS in use and clear screen of previous output
-os.system('cls' if os.name=='nt' else 'clear')
+system('cls' if name=='nt' else 'clear')
 
 print "Run Router Command v1.1.10"
 print "--------------------------"
@@ -85,7 +87,7 @@ if fileExist(routerFile):
 	if fileExist(commandFile):
 
 		# Define 'date' variable for use in the output filename
-		date = datetime.datetime.now()		# Determine today's date
+		date = datetime.now()		# Determine today's date
 		date = date.strftime('%Y%m%d')	# Format date as YYYYMMDD
 		
 		# Read hosts from specified file & remove duplicate entries, set protocol to SSH2

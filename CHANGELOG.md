@@ -1,6 +1,9 @@
 # RunRouterCommand.py #
 ---
 
+## RunRouterCommand.py v1.1.11 (2013-08-15) ##
+* Cleaned up module importing
+
 ## RunRouterCommand.py v1.1.10 (2013-08-15) ##
 * Alphabetized functions
 
