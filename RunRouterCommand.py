@@ -30,10 +30,20 @@ from Exscript.util.decorator    import autologin
 from Exscript.util.interact     import read_login
 from Exscript.util.report		import status,summarize
 
+
+def fileExist(fileName):
+# Check current path for existing file
+	try:
+		with open(fileName, 'r') as openedFile:
+			# If file exists (can be opened), return true
+			return 1
+	except IOError:
+		# If file does not exists (can't be opened), return false
+		return 0
+
 logger = Logger()	# Log stuff
 @log_to(logger)	# Logging decorator; Must precede runRouterCommand!
 @autologin()	# Exscript login decorator; Must precede runRouterCommand!
-
 def runRouterCommand(job, host, socket):
 	socket.execute("terminal length 0")	# Disable user-prompt to page through terminal output
 										# Exscript doesn't always recognize Cisco IOS
@@ -57,15 +67,6 @@ def runRouterCommand(job, host, socket):
 	socket.send('exit\r')				# Send the "exit" command to log out of router gracefully
 	socket.close()						# Close SSH connection
 
-def fileExist(fileName):
-# Check current path for existing file
-	try:
-		with open(fileName, 'r') as openedFile:
-			# If file exists (can be opened), return true
-			return 1
-	except IOError:
-		# If file does not exists (can't ben opened), return false
-		return 0
 	
 # Determine OS in use and clear screen of previous output
 os.system('cls' if os.name=='nt' else 'clear')
