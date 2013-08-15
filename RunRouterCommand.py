@@ -73,7 +73,7 @@ def runRouterCommand(job, host, socket):
 # Determine OS in use and clear screen of previous output
 system('cls' if name=='nt' else 'clear')
 
-print "Run Router Command v1.1.10"
+print "Run Router Command v1.1.11"
 print "--------------------------"
 print
 
