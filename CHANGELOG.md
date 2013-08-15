@@ -1,9 +1,14 @@
+# RunRouterCommand.py #
+---
+
+## RunRouterCommand.py v1.1.10 (2013-08-15) ##
+* Alphabetized functions
+
 ## RunRouterCommand.py v1.1.10 (2013-07-20) ##
 * Updating project to use Semantic Versioning: http://semver.org/
   Previous project versions were described using a MAJOR.PATCH increment
   instead of MAJOR.MINOR.PATCH increment.  In other words, adjusting the
   previous version 1.10 -- it's correct Semantic Version would be 1.1.10.
-
 
 ## RunRouterCommand.py 1.10 (2013-07-20) ##
 * Making application a bit more extendible through the use of functions and
