@@ -1,6 +1,10 @@
 # RunRouterCommand.py #
 ---
 
+## RunRouterCommand.py v1.1.12 (2013-08-29) ##
+* Suppressed error SPAM from stdout by adding stderr=(open(os.devnull, 'w'))
+  to the Queue() function. (Errors are still written to the log.)
+
 ## RunRouterCommand.py v1.1.11 (2013-08-15) ##
 * Cleaned up module importing
 

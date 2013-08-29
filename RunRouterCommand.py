@@ -18,10 +18,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-import datetime	# Required for date format
-import Exscript	# Required for SSH, queue & logging functionality
-import os		# Required to determine OS of host
+import argparse		# Required to read arguments from the command line
+import datetime		# Required for date format
+import Exscript		# Required for SSH, queue & logging functionality
+import os			# Required to determine OS of host
 
+from argparse					import ArgumentParser, RawDescriptionHelpFormatter
 from datetime					import datetime
 from Exscript                   import Queue, Host, Logger
 from Exscript.protocols 		import SSH2
@@ -30,8 +32,19 @@ from Exscript.util.log          import log_to
 from Exscript.util.decorator    import autologin
 from Exscript.util.interact     import read_login
 from Exscript.util.report		import status,summarize
-from os							import mkdir, name, path, system
+from os							import makedirs, name, path, system
 
+
+class Application:
+# This class was created to provide me with an easy way to update application
+# details across all my applications.  Also used to display information when
+# application is executed with "--help" argument.
+	author = "Aaron Melton <aaron@aaronmelton.com>"
+	date = "(2013-08-29)"
+	description = "Executes specified commands on a Cisco router."
+	name = "RunRouterCommand.py"
+	version = "v1.1.12"
+	url = "https://github.com/aaronmelton/RunRouterCommand"
 
 def fileExist(fileName):
 # Check current path for existing file
@@ -41,18 +54,18 @@ def fileExist(fileName):
 			return True
 	except IOError:
 		# If file does not exists (can't be opened), return false
-		return 0
+		return False
 
 logger = Logger()	# Log stuff
-@log_to(logger)	# Logging decorator; Must precede runRouterCommand!
-@autologin()	# Exscript login decorator; Must precede runRouterCommand!
+@log_to(logger)		# Logging decorator; Must precede runRouterCommand!
+@autologin()		# Exscript login decorator; Must precede runRouterCommand!
 def runRouterCommand(job, host, socket):
 	socket.execute("terminal length 0")	# Disable user-prompt to page through terminal output
 										# Exscript doesn't always recognize Cisco IOS
 										# for socket.autoinit() to work correctly
 
 	outputDirectory = ('results_'+date+'/')	# Define directory to hold terminal output files
-	if not path.exists(outputDirectory): mkdir(outputDirectory) # Create config file directory if it doesn't exist
+	if not path.exists(outputDirectory): makedirs(outputDirectory) # Create output directory if it doesn't exist
 		
 	outputFileName = host.get_name()+'_results_'+date+'.txt'	# Define output filename based on hostname and date
 	outputFile = file(outputDirectory+outputFileName, 'w')		# Open output file (will overwrite contents)
@@ -70,16 +83,29 @@ def runRouterCommand(job, host, socket):
 	socket.close()						# Close SSH connection
 
 	
+# Check to determine if any arguments may have been presented at the command
+# line and generate help message for "--help" switch
+parser = ArgumentParser(
+    formatter_class=RawDescriptionHelpFormatter,description=(
+		Application.name+" "+Application.version+" "+Application.date+"\n"+
+		"--\n"+
+		"Description: "+Application.description+"\n\n"+
+		"Author: "+Application.author+"\n"+
+		"URL:    "+Application.url
+	))
+# Add additional argument to handle any optional configFile passed to application
+parser.add_argument("-c", "--config", dest="configFile", help="config file", default="settings.cfg", required=False)
+args = parser.parse_args()		# Set 'args' = input from command line
+configFile = args.configFile	# Set configFile = config file from command line OR 'settings.cfg'
+
 # Determine OS in use and clear screen of previous output
-system('cls' if name=='nt' else 'clear')
+if name == 'nt':	system("cls")
+else:				system("clear")
 
-print "Run Router Command v1.1.11"
-print "--------------------------"
-print
+# PRINT PROGRAM BANNER
+print Application.name+" "+Application.version+" "+Application.date
+print "-"*(len(Application.name+Application.version+Application.date)+2)
 
-# Define file with router IP Addresses or Hostnames
-routerFile = 'routers.txt'
-commandFile = 'commands.txt'
 
 # Check for existence of routerFile; If exists, continue with program
 if fileExist(routerFile):
@@ -96,7 +122,7 @@ if fileExist(routerFile):
 		
 		print # Required for pretty spacing. :)
 		
-		queue = Queue(verbose=1, max_threads=4)	# Minimal message from queue, 4 threads
+		queue = Queue(verbose=1, max_threads=4, stderr=(open(os.devnull, 'w')))	# Minimal message from queue, 4 threads
 		queue.add_account(userCreds)			# Use supplied user credentials
 		queue.run(hosts, runRouterCommand)		# Create queue using provided hosts
 		queue.shutdown()						# End all running threads and close queue
@@ -118,6 +144,7 @@ if fileExist(routerFile):
 				print "Required file "+commandFile+" not found; One has been created for you."
 				print "This file must contain a list, one per line, of commands to send to the"
 				print "router."
+		
 		# If unable to write file for whatever reason, just print error message
 		except IOError:
 				# Print error message
@@ -136,6 +163,7 @@ else:
 			print "Required file "+routerFile+" not found; One has been created for you."
 			print "This file must contain a list, one per line, of Hostnames or IP addresses the"
 			print "application will then connect to."
+	
 	# If unable to write file for whatever reason, just print error message
 	except IOError:
 		# Print error message
