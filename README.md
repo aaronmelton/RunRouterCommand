@@ -16,11 +16,6 @@ Exscript module [https://github.com/knipknap/exscript/](https://github.com/knipk
    * Alter the `default_protocol` variable in the `get_hosts_from_file`
        function to use a different protocol enabled on your router(s).
 2. A valid username/password.
-3. A `routers.lst` file in the same directory as the script which contains
-   a list, one per line, of hostnames or IP addresses the application will
-   then connect to download the running-config.
-4. A `commands.lst` file in the same directory as the script which contains
-   a list of valid commands, one per line, to execute on the router.
 
 ## Assumptions ##
 1. This application was written for use on Cisco IOS devices and cannot be
@@ -32,35 +27,57 @@ Exscript module [https://github.com/knipknap/exscript/](https://github.com/knipk
 ## Limitations ##
 1. This application uses the same username/password to access ALL routers. If
    your routers use unique usernames/passwords, then this script will not work.
-2. This application is hard-coded to connect to FOUR routers simultaneously.
-   I wrote this application in an environment where Cisco routers authenticate
-   against a Cisco ACS and found FOUR simultaneous requests to be the maximum
-   number of requests before regular authentication failures began happening.
-   If you use static usernames/passwords in your environment, or your ACS is
-   more robust, feel free to increase the `max_threads` variable in the
-   `Queue` function.
+   If a password is stored in the `settings.cfg` file, it must be Base64 encoded.
+2. A correctly-formatted config file (default filename is `settings.cfg`).
+3. A correctly-formatted router file (default filename is `routers.txt`).
+4. A correctly-formatted command file (default filename is `commands.txt`).
 
 ## Functionality ##
-1. Upon execution, the application will prompt the user for a username and
-   password.  This username/password will be used to login to all routers
-   specified in the `routers.lst` file.
-2. The application will open an SSH v2 connection to each router in the
-   `routers.lst` file and use the credentials provided by the user to
-   authenticate.
-3. The application will pass a `terminal length 0` command to the router to
-   avoid any page breaks which will interrupt router output.  It has been my
+1. Upon execution, the application will search it's local directory for a
+   config file, `settings.txt`, if one was not provided through the command
+   line during execution `python DownloadRouterConfig.py --config CONFIGFILE`.
+   If a config file was not found or specified, a sample one will be created and
+   the application will exit (END).  Edit this file to your specifications
+   before launching the application again.
+2. Upon execution, the application will search for the routerFile variable
+   specified in the config file (default filename is `routers.txt`).  If that
+   file cannot be found, a sample one will be created and the application will
+   exit (END).  Edit this file to your specifications before launching the
+   application again.
+3. Upon execution, the application will search for the commandFile variable
+   specified in the config file (default filename is `commands.txt`).  If that
+   file cannot be found, a sample one will be created and the application will
+   exit (END).  Edit this file to your specifications before launching the
+   application again.
+4. The application will open an SSH v2 connection to each router in the
+   `routers.txt` file.  If the user specified their login credentials in the
+   config file, they will be used.  Otherwise, the application will prompt the
+   user to provide their login credentials upon execution.
+5. The application will pass a `terminal length 0` command to the router to
+   avoid any page breaks which will interrupt router output.  (It has been my
    experience in testing that the `autoinit()` function provided by Exscript
-   fails to accomplish this, so I perform this task manually.
-4. The application will read the contents of the `commands.lst` file line by
+   fails to detect Cisco IOS on some routers in our environment.)
+6. The application will read the contents of the `commands.txt` file line by
    line and pass them to the router as if they were being entered directly at
    terminal.  Be advised that if the router requires extra time to process
    a command or you attempt to pass too large a command list to the router, it
-   may overwhelm the copy-paste buffer.
-5. The application will write the the results of the commands as if you were
+   may overwhelm the copy-paste buffer and the router may not successfully
+   execute some commands.
+7. The application will write the the results of the commands as if you were
    seeing the output in the terminal.  These results will be written to 
-   a file using the format, `HOSTNAME_results_YYYYMMDD.txt`, where HOSTNAME is
-   the hostname (or IP address) specified in the `routers.lst` file and
+   a file using the format, `HOSTNAME_Results_YYYYMMDD.txt`, where HOSTNAME is
+   the hostname (or IP address) specified in the `routers.txt` file and
    YYYYMMDD is the numerical Year-Month-Day of the box executing the
-   application.
-6. The application will write a `status_YYYYMMDD.log` file that identifies the
-   connectivity results from each router.
+   application. These files will be stored in the directory specified by the
+   `backupDirectory` variable in the `settings.cfg` file, or the parent directory
+   of the application if no value was specified.  If this file already exists, 
+   the filename will be appended with an integer that will continue to increment 
+   until the application finds a filename that does not currently exist in that 
+   directory.
+8. The application will write a `RunRouterCommand_YYYYMMDD.log` file that 
+   identifies the connectivity results from each router.  This file will be 
+   stored in the directory specified by the `logFileDirectory` variable in the 
+   `settings.cfg` file, or the parent directory of the application if no value 
+   was specified.  If this file already exists, the filename will be appended 
+   with an integer that will continue to increment until the application finds 
+   a filename that does not currently exist in that directory.

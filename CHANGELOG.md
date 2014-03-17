@@ -1,6 +1,19 @@
 # RunRouterCommand.py #
 ---
 
+## RunRouterCommand.py v1.2.0 (2014-03-17) ##
+* Replaced tab with four spaces.
+* Application failed to fully execute because routerFile and commandFile were
+  not defined.  Originally intended to update this code such that it would read
+  these values from a config file but never finished that task.  Now complete.
+* Added error-checking around output file handling.
+* Replaced ' with " to be consistent throughout the file.
+* Updated `README.md` to match newest application design.
+* Corrected problem where application would fail if logFileDirectory or 
+  resultsFileDirectory in settings.cfg was blank.
+* Added error-checking for resultsFileDirectory variable.
+
+
 ## RunRouterCommand.py v1.1.12 (2013-08-29) ##
 * Suppressed error SPAM from stdout by adding stderr=(open(os.devnull, 'w'))
   to the Queue() function. (Errors are still written to the log.)
