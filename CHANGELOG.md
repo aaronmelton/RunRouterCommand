@@ -1,6 +1,11 @@
 # RunRouterCommand.py #
 ---
 
+## RunRouterCommand.py v1.2.1 (2014-06-09) ##
+* Added error correction for commandFile: Application did not previously check
+  to determine if this file existed.  Will create an example file containing
+  command "show version" if file does not exist.
+
 ## RunRouterCommand.py v1.2.0 (2014-03-17) ##
 * Replaced tab with four spaces.
 * Application failed to fully execute because routerFile and commandFile were

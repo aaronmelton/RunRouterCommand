@@ -24,6 +24,7 @@ import datetime     # Required for date format
 import ConfigParser # Required for configuration file
 import Exscript     # Required for SSH, queue & logging functionality
 import os           # Required to determine OS of host
+import time
 
 from argparse                   import ArgumentParser, RawDescriptionHelpFormatter
 from base64                     import b64decode
@@ -37,6 +38,7 @@ from Exscript.util.decorator    import autologin
 from Exscript.util.interact     import read_login
 from Exscript.util.report       import status,summarize
 from os                         import getcwd, makedirs, name, path, system
+from time                       import sleep
 
 
 class Application:
@@ -44,10 +46,10 @@ class Application:
 # details across all my applications.  Also used to display information when
 # application is executed with "--help" argument.
     author = "Aaron Melton <aaron@aaronmelton.com>"
-    date = "(2014-03-17)"
+    date = "(2014-06-09)"
     description = "Executes specified commands on a Cisco router."
     name = "RunRouterCommand.py"
-    version = "v1.2.0"
+    version = "v1.2.1"
     url = "https://github.com/aaronmelton/RunRouterCommand"
 
 def fileExist(fileName):
@@ -92,6 +94,11 @@ def runRouterCommand(job, host, socket):
             
             for x in range(0, len(line)):           # Loop through contents of input file
                 socket.execute(line[x])             # Execute command on router
+
+                ###
+                sleep(1)
+                ###
+                
                 outputFile.write(socket.response)   # Write router results to output file
                 
             commandList.close()     # Close input file
@@ -182,6 +189,22 @@ finally:
     # Error checking for verboseOutput & maxThreads
     if int(verboseOutput) not in range(0,5):    verboseOutput = 1
     if int(maxThreads) not in range(1,100):     maxThreads = 2
+    
+    if fileExist(commandFile):  pass
+    else: # if fileExist(commandFile):
+    # Else if no commandFile exists, create a sample one and quit the program.
+        try:
+            with open (commandFile, "w") as exampleFile:
+                print
+                print "--> Command file not found; Creating "+commandFile+"."
+                print "    Edit this file and restart the application."
+                exampleFile.write("show version")
+        
+        # Exception: file could not be created
+        except IOError:
+            print
+            print "--> Required file "+commandFile+" not found; An error has occurred creating "+commandFile+"."
+            print "This file must contain a list, one per line, commands to run on each router."
 
     if fileExist(routerFile):
         # Define "date" variable for use in the output filename
